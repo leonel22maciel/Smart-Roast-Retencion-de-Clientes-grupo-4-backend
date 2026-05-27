@@ -2,7 +2,7 @@ Historias de Usuario
 
 HU01 – Registro de compras
 
-Como sistema SmartClub Quiero registrar compras mensuales 
+Como sistema SmartClub Quiero registrar compras mensuales
 Para calcular automáticamente puntos acumulados mostrando el monto de puntos obtenido por cada producto comprado.
 
 
@@ -51,3 +51,9 @@ HU09 – Top Premium
 
 Como dueño Quiero que los 10 mejor posicionados en el ranking de compradores siendo cat. Premium accedan a un sorteo con todo pago una vez al año (Viaje, estadía, guía dentro del cafetal, y muestra exclusiva de café) (Acompañado de una persona a elección). 
 Para premiar a los mejores rankeados del año brindando la posibilidad de conocer de primera mano a la empresa que los acompaña cada mañana con su excelente café.
+
+HU10 - Tiempo de espera
+
+Como cliente quiero saber el tiempo que demoran los envios segun la distancia en la que estoy.
+Para estimar el tiempo que tardara el producto para llegar a mi  localidad.
+
