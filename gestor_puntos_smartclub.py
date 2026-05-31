@@ -25,3 +25,13 @@ class Plan:
         self.nombre = nombre
         self.precio = precio
         self.multiplica_puntos = multiplica_puntos
+
+class Compra:
+    def __init__(self, producto, monto, puntos):
+        self.producto = producto
+        self.monto = monto
+        self.puntos = puntos
+
+    def resumen(self):
+        return f"{self.producto} - ${self.monto} - {self.puntos} puntos"
+
