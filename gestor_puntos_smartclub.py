@@ -18,3 +18,10 @@ class Cliente:
 
         self.puntos -= puntos
         return True
+
+
+class Plan:
+    def __init__(self, nombre, precio, multiplica_puntos):
+        self.nombre = nombre
+        self.precio = precio
+        self.multiplica_puntos = multiplica_puntos
