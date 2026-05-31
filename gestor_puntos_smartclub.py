@@ -35,3 +35,15 @@ class Compra:
     def resumen(self):
         return f"{self.producto} - ${self.monto} - {self.puntos} puntos"
 
+class Recompensa:
+    def __init__(self, nombre, costo, solo_premium=False):
+        self.nombre = nombre
+        self.costo = costo
+        self.solo_premium = solo_premium
+
+    def puede_canjearla(self, cliente):
+        if self.solo_premium and not cliente.es_premium():
+            return False
+
+        return True
+
