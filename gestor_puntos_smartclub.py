@@ -47,3 +47,14 @@ class Recompensa:
 
         return True
 
+class RankingPremium:
+    def obtener_top_10(self, clientes):
+        clientes_premium = []
+
+        for cliente in clientes:
+            if cliente.es_premium():
+                total_gastado = sum(compra.monto for compra in cliente.compras)
+                clientes_premium.append((cliente.nombre, total_gastado))
+
+        clientes_premium.sort(key=lambda dato: dato[1], reverse=True)
+        return clientes_premium[:10]
