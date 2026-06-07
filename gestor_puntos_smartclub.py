@@ -1,60 +1,56 @@
-class Cliente:
-    def __init__(self, nombre, plan):
-        self.nombre = nombre
-        self.plan = plan
-        self.puntos = 0
-        self.compras = []
-        self.canjes = []
+# =====================================================================
+# ESTRUCTURAS DE DATOS INICIALES (Base de datos simulada)
+# =====================================================================
 
-    def es_premium(self):
-        return self.plan.nombre.lower() == "premium"
+configuracion_puntos = {
+    "pesos_necesarios": 1000,
+    "puntos_ganados": 10
+}
 
-    def sumar_puntos(self, puntos):
-        self.puntos += puntos
+cliente_inicial = {
+    "nombre": "Lucia",
+    "suscripcion": "Premium",
+    "saldo_puntos": 0
+}
 
-    def descontar_puntos(self, puntos):
-        if self.puntos < puntos:
-            return False
+compras_mensuales_inicial = [
+    {"producto": "Cafe Colombia 500g", "monto": 18000},
+    {"producto": "Cafe Brasil 1kg", "monto": 30000},
+    {"producto": "Cafe Molido 250g", "monto": 12000}
+]
 
-        self.puntos -= puntos
-        return True
+recompensas_inicial = {
+    "1": {"nombre": "Descuento 10%", "costo": 100, "solo_premium": False},
+    "2": {"nombre": "Envio gratis", "costo": 150, "solo_premium": False},
+    "3": {"nombre": "Taza exclusiva", "costo": 300, "solo_premium": True},
+    "4": {"nombre": "Cafe premium gratis", "costo": 500, "solo_premium": True}
+}
+
+planes_iniciales = {
+    "Basico": {"precio": 0, "beneficio": "Puntos normales", "multiplicador": 1},
+    "Explorer": {"precio": 17999, "beneficio": "50% mas puntos", "multiplicador": 1.5},
+    "Premium": {"precio": 29999, "beneficio": "Puntos dobles y beneficios VIP", "multiplicador": 2}
+}
+
+historial_compras_inicial = []
+
+clientes_ranking_inicial = [
+    {"nombre": "Sofia", "suscripcion": "Premium", "total_gastado": 85000},
+    {"nombre": "Mateo", "suscripcion": "Premium", "total_gastado": 76000},
+    {"nombre": "Valentina", "suscripcion": "Premium", "total_gastado": 63000},
+    {"nombre": "Martin", "suscripcion": "Basico", "total_gastado": 90000}
+]
 
 
-class Plan:
-    def __init__(self, nombre, precio, multiplica_puntos):
-        self.nombre = nombre
-        self.precio = precio
-        self.multiplica_puntos = multiplica_puntos
+# =====================================================================
+# SECCION DE FUNCIONES DEL MODULO SMARTCLUB
+# =====================================================================
 
-class Compra:
-    def __init__(self, producto, monto, puntos):
-        self.producto = producto
-        self.monto = monto
-        self.puntos = puntos
+#========== #consigna 1: Calcular puntos por una compra #========
+def obtener_multiplicador(suscripcion, planes):
+    suscripcion = suscripcion.strip().capitalize()
 
-    def resumen(self):
-        return f"{self.producto} - ${self.monto} - {self.puntos} puntos"
+    if suscripcion in planes:
+        return planes[suscripcion]["multiplicador"]
 
-class Recompensa:
-    def __init__(self, nombre, costo, solo_premium=False):
-        self.nombre = nombre
-        self.costo = costo
-        self.solo_premium = solo_premium
-
-    def puede_canjearla(self, cliente):
-        if self.solo_premium and not cliente.es_premium():
-            return False
-
-        return True
-
-class RankingPremium:
-    def obtener_top_10(self, clientes):
-        clientes_premium = []
-
-        for cliente in clientes:
-            if cliente.es_premium():
-                total_gastado = sum(compra.monto for compra in cliente.compras)
-                clientes_premium.append((cliente.nombre, total_gastado))
-
-        clientes_premium.sort(key=lambda dato: dato[1], reverse=True)
-        return clientes_premium[:10]
+    return 1
