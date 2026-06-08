@@ -163,3 +163,18 @@ def listar_recompensas_disponibles(cliente, recompensas):
         })
 
     return disponibles
+
+#========== #consigna 9: Mostrar planes de suscripcion #========
+def listar_planes(planes):
+    lista_planes = []
+
+    for nombre_plan, datos in planes.items():
+        lista_planes.append({
+            "plan": nombre_plan,
+            "precio": datos["precio"],
+            "beneficio": datos["beneficio"],
+            "multiplicador": datos["multiplicador"]
+        })
+
+    return lista_planes
+
