@@ -148,3 +148,18 @@ def canjear_recompensa(cliente, recompensas, id_recompensa):
     cliente["saldo_puntos"] -= costo
     return True, "Canje realizado correctamente."
 
+#========== #consigna 8: Listar recompensas disponibles #========
+def listar_recompensas_disponibles(cliente, recompensas):
+    disponibles = []
+
+    for id_recompensa, datos in recompensas.items():
+        if datos["solo_premium"] and cliente["suscripcion"].lower().strip() != "premium":
+            continue
+
+        disponibles.append({
+            "id": id_recompensa,
+            "nombre": datos["nombre"],
+            "costo": datos["costo"]
+        })
+
+    return disponibles
