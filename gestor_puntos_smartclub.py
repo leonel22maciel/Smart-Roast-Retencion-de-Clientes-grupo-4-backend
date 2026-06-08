@@ -94,3 +94,29 @@ def procesar_lote_compras(cliente, lista_compras, historial, configuracion, plan
         puntos_totales += puntos
 
     return puntos_totales
+#========== #consigna 4: Registrar una compra individual #========
+def registrar_compra(cliente, historial, producto, monto, configuracion, planes):
+    try:
+        monto_num = float(monto)
+        if monto_num <= 0:
+            return False, 0
+
+        puntos = calcular_puntos(monto_num, cliente["suscripcion"], configuracion, planes)
+
+        compra = {
+            "producto": producto,
+            "monto": monto_num,
+            "puntos_obtenidos": puntos
+        }
+
+        historial.append(compra)
+        cliente["saldo_puntos"] += puntos
+
+        return True, puntos
+    except ValueError:
+        return False, 0
+
+
+#========== #consigna 5: Consultar saldo de puntos #========
+def consultar_saldo(cliente):
+    return cliente["saldo_puntos"]
