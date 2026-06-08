@@ -54,3 +54,43 @@ def obtener_multiplicador(suscripcion, planes):
         return planes[suscripcion]["multiplicador"]
 
     return 1
+
+#========== #consigna 2: Calcular puntos por una compra #========
+def calcular_puntos(monto, suscripcion, configuracion, planes):
+    try:
+        monto_num = float(monto)
+        if monto_num <= 0:
+            return 0
+
+        pesos_necesarios = configuracion["pesos_necesarios"]
+        puntos_ganados = configuracion["puntos_ganados"]
+        multiplicador = obtener_multiplicador(suscripcion, planes)
+
+        puntos = int(monto_num // pesos_necesarios) * puntos_ganados
+        puntos = int(puntos * multiplicador)
+
+        return puntos
+    except ValueError:
+        return 0
+
+
+#========== #consigna 3: Procesar lote de compras mensuales #========
+def procesar_lote_compras(cliente, lista_compras, historial, configuracion, planes):
+    puntos_totales = 0
+
+    for compra in lista_compras:
+        producto = compra["producto"]
+        monto = compra["monto"]
+        puntos = calcular_puntos(monto, cliente["suscripcion"], configuracion, planes)
+
+        nueva_compra = {
+            "producto": producto,
+            "monto": monto,
+            "puntos_obtenidos": puntos
+        }
+
+        historial.append(nueva_compra)
+        cliente["saldo_puntos"] += puntos
+        puntos_totales += puntos
+
+    return puntos_totales
