@@ -120,3 +120,31 @@ def registrar_compra(cliente, historial, producto, monto, configuracion, planes)
 #========== #consigna 5: Consultar saldo de puntos #========
 def consultar_saldo(cliente):
     return cliente["saldo_puntos"]
+
+
+#========== #consigna 6: Buscar recompensa por ID #========
+def buscar_recompensa(recompensas, id_recompensa):
+    if id_recompensa in recompensas:
+        return recompensas[id_recompensa]
+    else:
+        return None
+
+
+#========== #consigna 7: Canjear recompensa validando saldo #========
+def canjear_recompensa(cliente, recompensas, id_recompensa):
+    recompensa = buscar_recompensa(recompensas, id_recompensa)
+
+    if recompensa is None:
+        return False, "La recompensa no existe."
+
+    if recompensa["solo_premium"] and cliente["suscripcion"].lower().strip() != "premium":
+        return False, "Esta recompensa es solo para clientes Premium."
+
+    costo = recompensa["costo"]
+
+    if cliente["saldo_puntos"] < costo:
+        return False, "Saldo insuficiente. No se puede dejar saldo negativo."
+
+    cliente["saldo_puntos"] -= costo
+    return True, "Canje realizado correctamente."
+
