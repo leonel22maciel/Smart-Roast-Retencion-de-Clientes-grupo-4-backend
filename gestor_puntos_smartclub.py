@@ -178,3 +178,13 @@ def listar_planes(planes):
 
     return lista_planes
 
+#========== #consigna 10: Obtener Top Premium #========
+def obtener_top_premium(clientes):
+    premium = []
+
+    for cliente in clientes:
+        if cliente["suscripcion"].lower().strip() == "premium":
+            premium.append(cliente)
+
+    premium.sort(key=lambda dato: dato["total_gastado"], reverse=True)
+    return premium[:10]
