@@ -55,6 +55,7 @@ def obtener_multiplicador(suscripcion, planes):
 
     return 1
 
+
 #========== #consigna 2: Calcular puntos por una compra #========
 def calcular_puntos(monto, suscripcion, configuracion, planes):
     try:
@@ -94,6 +95,8 @@ def procesar_lote_compras(cliente, lista_compras, historial, configuracion, plan
         puntos_totales += puntos
 
     return puntos_totales
+
+
 #========== #consigna 4: Registrar una compra individual #========
 def registrar_compra(cliente, historial, producto, monto, configuracion, planes):
     try:
@@ -148,6 +151,7 @@ def canjear_recompensa(cliente, recompensas, id_recompensa):
     cliente["saldo_puntos"] -= costo
     return True, "Canje realizado correctamente."
 
+
 #========== #consigna 8: Listar recompensas disponibles #========
 def listar_recompensas_disponibles(cliente, recompensas):
     disponibles = []
@@ -164,6 +168,7 @@ def listar_recompensas_disponibles(cliente, recompensas):
 
     return disponibles
 
+
 #========== #consigna 9: Mostrar planes de suscripcion #========
 def listar_planes(planes):
     lista_planes = []
@@ -178,6 +183,7 @@ def listar_planes(planes):
 
     return lista_planes
 
+
 #========== #consigna 10: Obtener Top Premium #========
 def obtener_top_premium(clientes):
     premium = []
@@ -188,6 +194,7 @@ def obtener_top_premium(clientes):
 
     premium.sort(key=lambda dato: dato["total_gastado"], reverse=True)
     return premium[:10]
+
 
 #========== #consigna 11: Mostrar historial de compras #========
 def mostrar_historial_compras(historial):
@@ -214,13 +221,6 @@ def mostrar_menu():
     print("=" * 55)
 
 
-
-
-
-
-
-
-
 def main():
     cliente = cliente_inicial.copy()
     compras_mensuales = compras_mensuales_inicial.copy()
@@ -242,3 +242,32 @@ def main():
             puntos = procesar_lote_compras(cliente, compras_mensuales, historial, configuracion_puntos, planes)
             print(f"Se procesaron las compras del mes. Puntos generados: {puntos}")
             print(f"Saldo actual: {cliente['saldo_puntos']} puntos")
+
+        elif opcion == "2":
+            print("\n--- REGISTRAR COMPRA ---")
+            producto = input("Ingrese el producto comprado: ").strip()
+            monto = input("Ingrese el monto gastado: ").strip()
+            exito, puntos = registrar_compra(cliente, historial, producto, monto, configuracion_puntos, planes)
+
+            if exito:
+                print(f"Compra registrada. Puntos obtenidos: {puntos}")
+            else:
+                print("Error: revise que el monto sea valido.")
+
+        elif opcion == "3":
+            print("\n--- CONSULTAR SALDO ---")
+            print(f"Cliente: {cliente['nombre']}")
+            print(f"Suscripcion: {cliente['suscripcion']}")
+            print(f"Saldo: {consultar_saldo(cliente)} puntos")
+
+        elif opcion == "4":
+            print("\n--- HISTORIAL DE COMPRAS ---")
+            historial_actual = mostrar_historial_compras(historial)
+
+            if len(historial_actual) == 0:
+                print("Todavia no hay compras registradas.")
+            else:
+                for compra in historial_actual:
+                    print(f"* {compra['producto']} | ${compra['monto']} | {compra['puntos_obtenidos']} puntos")
+
+ 
