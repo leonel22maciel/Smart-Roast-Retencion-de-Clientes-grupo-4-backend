@@ -213,3 +213,32 @@ def mostrar_menu():
     print("0. Salir")
     print("=" * 55)
 
+
+
+
+
+
+
+
+
+def main():
+    cliente = cliente_inicial.copy()
+    compras_mensuales = compras_mensuales_inicial.copy()
+    recompensas = recompensas_inicial.copy()
+    planes = planes_iniciales.copy()
+    historial = historial_compras_inicial.copy()
+    ranking = clientes_ranking_inicial.copy()
+
+    while True:
+        mostrar_menu()
+        opcion = input("Seleccione una opcion: ").strip()
+
+        if opcion == "0":
+            print("Gracias por usar SmartClub.")
+            break
+
+        elif opcion == "1":
+            print("\n--- PROCESAR LOTE MENSUAL ---")
+            puntos = procesar_lote_compras(cliente, compras_mensuales, historial, configuracion_puntos, planes)
+            print(f"Se procesaron las compras del mes. Puntos generados: {puntos}")
+            print(f"Saldo actual: {cliente['saldo_puntos']} puntos")
