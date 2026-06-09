@@ -188,3 +188,28 @@ def obtener_top_premium(clientes):
 
     premium.sort(key=lambda dato: dato["total_gastado"], reverse=True)
     return premium[:10]
+
+#========== #consigna 11: Mostrar historial de compras #========
+def mostrar_historial_compras(historial):
+    return historial
+
+
+# =====================================================================
+# MENU DEL SISTEMA (Para probar el modulo en consola)
+# =====================================================================
+
+def mostrar_menu():
+    print("\n" + "=" * 55)
+    print("        SISTEMA SMARTCLUB - COFFEE CLUB")
+    print("=" * 55)
+    print("1. Procesar lote mensual de compras")
+    print("2. Registrar una compra individual")
+    print("3. Consultar saldo de puntos")
+    print("4. Ver historial de compras")
+    print("5. Ver recompensas disponibles")
+    print("6. Canjear recompensa")
+    print("7. Ver planes de suscripcion")
+    print("8. Ver Top Premium")
+    print("0. Salir")
+    print("=" * 55)
+
