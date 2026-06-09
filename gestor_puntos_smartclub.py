@@ -269,5 +269,21 @@ def main():
             else:
                 for compra in historial_actual:
                     print(f"* {compra['producto']} | ${compra['monto']} | {compra['puntos_obtenidos']} puntos")
+        elif opcion == "5":
+            print("\n--- RECOMPENSAS DISPONIBLES ---")
+            disponibles = listar_recompensas_disponibles(cliente, recompensas)
 
- 
+            for recompensa in disponibles:
+                print(f"ID {recompensa['id']}: {recompensa['nombre']} - {recompensa['costo']} puntos")
+
+        elif opcion == "6":
+            print("\n--- CANJEAR RECOMPENSA ---")
+            disponibles = listar_recompensas_disponibles(cliente, recompensas)
+
+            for recompensa in disponibles:
+                print(f"ID {recompensa['id']}: {recompensa['nombre']} - {recompensa['costo']} puntos")
+
+            id_recompensa = input("Ingrese el ID de la recompensa: ").strip()
+            exito, mensaje = canjear_recompensa(cliente, recompensas, id_recompensa)
+            print(mensaje)
+            print(f"Saldo actual: {cliente['saldo_puntos']} puntos")
