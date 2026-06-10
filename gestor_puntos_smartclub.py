@@ -287,3 +287,24 @@ def main():
             exito, mensaje = canjear_recompensa(cliente, recompensas, id_recompensa)
             print(mensaje)
             print(f"Saldo actual: {cliente['saldo_puntos']} puntos")
+            
+        elif opcion == "7":
+            print("\n--- PLANES DE SUSCRIPCION ---")
+            lista_planes = listar_planes(planes)
+
+            for plan in lista_planes:
+                print(f"{plan['plan']} | Precio: ${plan['precio']} | Beneficio: {plan['beneficio']} | Multiplicador: x{plan['multiplicador']}")
+
+        elif opcion == "8":
+            print("\n--- TOP PREMIUM ---")
+            top = obtener_top_premium(ranking)
+
+            for puesto, cliente_top in enumerate(top, start=1):
+                print(f"{puesto}. {cliente_top['nombre']} - Total gastado: ${cliente_top['total_gastado']}")
+
+        else:
+            print("Opcion invalida. Intente nuevamente.")
+
+
+if __name__ == "__main__":
+    main()
