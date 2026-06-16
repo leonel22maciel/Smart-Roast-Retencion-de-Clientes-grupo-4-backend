@@ -10,7 +10,9 @@ configuracion_puntos = {
 cliente_inicial = {
     "nombre": "Lucia",
     "suscripcion": "Premium",
-    "saldo_puntos": 0
+    "saldo_puntos": 0,
+    "activo": True,
+    "descuento_pendiente": 0.0
 }
 
 compras_mensuales_inicial = [
@@ -98,17 +100,29 @@ def procesar_lote_compras(cliente, lista_compras, historial, configuracion, plan
 
 
 #========== #consigna 4: Registrar una compra individual #========
+def calcular_monto_con_descuento(cliente, monto):
+    descuento = cliente.get("descuento_pendiente", 0.0)
+    if descuento <= 0:
+        return monto
+
+    monto_descuento = monto * (1 - descuento)
+    cliente["descuento_pendiente"] = 0.0
+    return round(monto_descuento, 2)
+
+
 def registrar_compra(cliente, historial, producto, monto, configuracion, planes):
     try:
         monto_num = float(monto)
         if monto_num <= 0:
             return False, 0
 
-        puntos = calcular_puntos(monto_num, cliente["suscripcion"], configuracion, planes)
+        monto_final = calcular_monto_con_descuento(cliente, monto_num)
+        puntos = calcular_puntos(monto_final, cliente["suscripcion"], configuracion, planes)
 
         compra = {
             "producto": producto,
             "monto": monto_num,
+            "monto_final": monto_final,
             "puntos_obtenidos": puntos
         }
 
@@ -149,7 +163,75 @@ def canjear_recompensa(cliente, recompensas, id_recompensa):
         return False, "Saldo insuficiente. No se puede dejar saldo negativo."
 
     cliente["saldo_puntos"] -= costo
+
+    if recompensa["nombre"].lower().startswith("descuento 10"):
+        cliente["descuento_pendiente"] = 0.10
+        return True, "Canje realizado correctamente. Se aplicara un 10% de descuento en la siguiente compra."
+
     return True, "Canje realizado correctamente."
+
+
+def actualizar_estado_cliente(cliente, activo):
+    cliente["activo"] = bool(activo)
+    return cliente["activo"]
+
+
+def buscar_cliente(clientes, nombre):
+    nombre = nombre.strip().lower()
+    for cliente in clientes:
+        if cliente["nombre"].strip().lower() == nombre:
+            return cliente
+    return None
+
+
+def dar_alta_cliente(clientes, nombre, suscripcion, saldo_puntos=0, descuento_pendiente=0.0):
+    if buscar_cliente(clientes, nombre) is not None:
+        return False, "Ya existe un cliente con ese nombre."
+
+    cliente_nuevo = {
+        "nombre": nombre.strip().title(),
+        "suscripcion": suscripcion.strip().capitalize(),
+        "saldo_puntos": saldo_puntos,
+        "activo": True,
+        "descuento_pendiente": descuento_pendiente
+    }
+    clientes.append(cliente_nuevo)
+    return True, f"Cliente {cliente_nuevo['nombre']} dado de alta correctamente."
+
+
+def dar_baja_cliente(clientes, nombre):
+    cliente = buscar_cliente(clientes, nombre)
+    if cliente is None:
+        return False, "No se encontro el cliente."
+
+    clientes.remove(cliente)
+    return True, f"Cliente {cliente['nombre']} eliminado del registro."
+
+
+def seleccionar_cliente(clientes):
+    if len(clientes) == 0:
+        return None
+    if len(clientes) == 1:
+        return clientes[0]
+
+    print("\nClientes registrados:")
+    for cliente in clientes:
+        estado = "Activo" if cliente.get("activo", False) else "Inactivo"
+        print(f"- {cliente['nombre']} | {cliente['suscripcion']} | {estado}")
+
+    nombre = input("Ingrese el nombre del cliente: ").strip()
+    cliente = buscar_cliente(clientes, nombre)
+    if cliente is None:
+        print("Cliente no encontrado. Seleccione una opcion valida.")
+    return cliente
+
+
+def recategorizar_suscripcion(cliente, nueva_suscripcion, planes):
+    if nueva_suscripcion.strip().capitalize() not in planes:
+        return False, "El plan de suscripcion no existe."
+
+    cliente["suscripcion"] = nueva_suscripcion.strip().capitalize()
+    return True, f"Suscripcion actualizada a {cliente['suscripcion']}."
 
 
 #========== #consigna 8: Listar recompensas disponibles #========
@@ -217,12 +299,15 @@ def mostrar_menu():
     print("6. Canjear recompensa")
     print("7. Ver planes de suscripcion")
     print("8. Ver Top Premium")
+    print("9. Dar de alta un nuevo cliente")
+    print("10. Dar de baja un cliente")
+    print("11. Recategorizar un cliente")
     print("0. Salir")
     print("=" * 55)
 
 
 def main():
-    cliente = cliente_inicial.copy()
+    clientes = [cliente_inicial.copy()]
     compras_mensuales = compras_mensuales_inicial.copy()
     recompensas = recompensas_inicial.copy()
     planes = planes_iniciales.copy()
@@ -239,26 +324,38 @@ def main():
 
         elif opcion == "1":
             print("\n--- PROCESAR LOTE MENSUAL ---")
-            puntos = procesar_lote_compras(cliente, compras_mensuales, historial, configuracion_puntos, planes)
-            print(f"Se procesaron las compras del mes. Puntos generados: {puntos}")
-            print(f"Saldo actual: {cliente['saldo_puntos']} puntos")
+            cliente = seleccionar_cliente(clientes)
+            if cliente is None:
+                print("No hay clientes registrados.")
+            else:
+                puntos = procesar_lote_compras(cliente, compras_mensuales, historial, configuracion_puntos, planes)
+                print(f"Se procesaron las compras del mes para {cliente['nombre']}. Puntos generados: {puntos}")
+                print(f"Saldo actual: {cliente['saldo_puntos']} puntos")
 
         elif opcion == "2":
             print("\n--- REGISTRAR COMPRA ---")
-            producto = input("Ingrese el producto comprado: ").strip()
-            monto = input("Ingrese el monto gastado: ").strip()
-            exito, puntos = registrar_compra(cliente, historial, producto, monto, configuracion_puntos, planes)
-
-            if exito:
-                print(f"Compra registrada. Puntos obtenidos: {puntos}")
+            cliente = seleccionar_cliente(clientes)
+            if cliente is None:
+                print("No hay clientes registrados.")
             else:
-                print("Error: revise que el monto sea valido.")
+                producto = input("Ingrese el producto comprado: ").strip()
+                monto = input("Ingrese el monto gastado: ").strip()
+                exito, puntos = registrar_compra(cliente, historial, producto, monto, configuracion_puntos, planes)
+
+                if exito:
+                    print(f"Compra registrada para {cliente['nombre']}. Puntos obtenidos: {puntos}")
+                else:
+                    print("Error: revise que el monto sea valido.")
 
         elif opcion == "3":
             print("\n--- CONSULTAR SALDO ---")
-            print(f"Cliente: {cliente['nombre']}")
-            print(f"Suscripcion: {cliente['suscripcion']}")
-            print(f"Saldo: {consultar_saldo(cliente)} puntos")
+            cliente = seleccionar_cliente(clientes)
+            if cliente is None:
+                print("No hay clientes registrados.")
+            else:
+                print(f"Cliente: {cliente['nombre']}")
+                print(f"Suscripcion: {cliente['suscripcion']}")
+                print(f"Saldo: {consultar_saldo(cliente)} puntos")
 
         elif opcion == "4":
             print("\n--- HISTORIAL DE COMPRAS ---")
@@ -271,22 +368,30 @@ def main():
                     print(f"* {compra['producto']} | ${compra['monto']} | {compra['puntos_obtenidos']} puntos")
         elif opcion == "5":
             print("\n--- RECOMPENSAS DISPONIBLES ---")
-            disponibles = listar_recompensas_disponibles(cliente, recompensas)
+            cliente = seleccionar_cliente(clientes)
+            if cliente is None:
+                print("No hay clientes registrados.")
+            else:
+                disponibles = listar_recompensas_disponibles(cliente, recompensas)
 
-            for recompensa in disponibles:
-                print(f"ID {recompensa['id']}: {recompensa['nombre']} - {recompensa['costo']} puntos")
+                for recompensa in disponibles:
+                    print(f"ID {recompensa['id']}: {recompensa['nombre']} - {recompensa['costo']} puntos")
 
         elif opcion == "6":
             print("\n--- CANJEAR RECOMPENSA ---")
-            disponibles = listar_recompensas_disponibles(cliente, recompensas)
+            cliente = seleccionar_cliente(clientes)
+            if cliente is None:
+                print("No hay clientes registrados.")
+            else:
+                disponibles = listar_recompensas_disponibles(cliente, recompensas)
 
-            for recompensa in disponibles:
-                print(f"ID {recompensa['id']}: {recompensa['nombre']} - {recompensa['costo']} puntos")
+                for recompensa in disponibles:
+                    print(f"ID {recompensa['id']}: {recompensa['nombre']} - {recompensa['costo']} puntos")
 
-            id_recompensa = input("Ingrese el ID de la recompensa: ").strip()
-            exito, mensaje = canjear_recompensa(cliente, recompensas, id_recompensa)
-            print(mensaje)
-            print(f"Saldo actual: {cliente['saldo_puntos']} puntos")
+                id_recompensa = input("Ingrese el ID de la recompensa: ").strip()
+                exito, mensaje = canjear_recompensa(cliente, recompensas, id_recompensa)
+                print(mensaje)
+                print(f"Saldo actual: {cliente['saldo_puntos']} puntos")
             
         elif opcion == "7":
             print("\n--- PLANES DE SUSCRIPCION ---")
@@ -301,6 +406,30 @@ def main():
 
             for puesto, cliente_top in enumerate(top, start=1):
                 print(f"{puesto}. {cliente_top['nombre']} - Total gastado: ${cliente_top['total_gastado']}")
+
+        elif opcion == "9":
+            print("\n--- DAR DE ALTA UN NUEVO CLIENTE ---")
+            nombre_nuevo = input("Ingrese el nombre del nuevo cliente: ").strip()
+            suscripcion_nueva = input("Ingrese la suscripcion del cliente (Basico, Explorer, Premium): ").strip()
+            exito, mensaje = dar_alta_cliente(clientes, nombre_nuevo, suscripcion_nueva)
+            print(mensaje)
+
+        elif opcion == "10":
+            print("\n--- DAR DE BAJA UN CLIENTE ---")
+            nombre_baja = input("Ingrese el nombre del cliente a dar de baja: ").strip()
+            exito, mensaje = dar_baja_cliente(clientes, nombre_baja)
+            print(mensaje)
+
+        elif opcion == "11":
+            print("\n--- RECATEGORIZAR UN CLIENTE ---")
+            cliente = seleccionar_cliente(clientes)
+            if cliente is None:
+                print("No hay clientes registrados.")
+            else:
+                print(f"Suscripcion actual: {cliente['suscripcion']}")
+                nueva_suscripcion = input("Ingrese la nueva suscripcion (Basico, Explorer, Premium): ").strip()
+                exito, mensaje = recategorizar_suscripcion(cliente, nueva_suscripcion, planes)
+                print(mensaje)
 
         else:
             print("Opcion invalida. Intente nuevamente.")
