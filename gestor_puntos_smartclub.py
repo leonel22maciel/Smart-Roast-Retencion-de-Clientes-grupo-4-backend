@@ -12,7 +12,8 @@ cliente_inicial = {
     "suscripcion": "Premium",
     "saldo_puntos": 0,
     "activo": True,
-    "descuento_pendiente": 0.0
+    "descuento_pendiente": 0.0,
+    "total_gastado": 0.0
 }
 
 compras_mensuales_inicial = [
@@ -84,16 +85,19 @@ def procesar_lote_compras(cliente, lista_compras, historial, configuracion, plan
     for compra in lista_compras:
         producto = compra["producto"]
         monto = compra["monto"]
-        puntos = calcular_puntos(monto, cliente["suscripcion"], configuracion, planes)
+        monto_final = calcular_monto_con_descuento(cliente, monto)
+        puntos = calcular_puntos(monto_final, cliente["suscripcion"], configuracion, planes)
 
         nueva_compra = {
             "producto": producto,
             "monto": monto,
+            "monto_final": monto_final,
             "puntos_obtenidos": puntos
         }
 
         historial.append(nueva_compra)
         cliente["saldo_puntos"] += puntos
+        cliente["total_gastado"] = cliente.get("total_gastado", 0.0) + monto_final
         puntos_totales += puntos
 
     return puntos_totales
@@ -128,6 +132,7 @@ def registrar_compra(cliente, historial, producto, monto, configuracion, planes)
 
         historial.append(compra)
         cliente["saldo_puntos"] += puntos
+        cliente["total_gastado"] = cliente.get("total_gastado", 0.0) + monto_final
 
         return True, puntos
     except ValueError:
@@ -193,7 +198,8 @@ def dar_alta_cliente(clientes, nombre, suscripcion, saldo_puntos=0, descuento_pe
         "suscripcion": suscripcion.strip().capitalize(),
         "saldo_puntos": saldo_puntos,
         "activo": True,
-        "descuento_pendiente": descuento_pendiente
+        "descuento_pendiente": descuento_pendiente,
+        "total_gastado": 0.0
     }
     clientes.append(cliente_nuevo)
     return True, f"Cliente {cliente_nuevo['nombre']} dado de alta correctamente."
@@ -211,8 +217,6 @@ def dar_baja_cliente(clientes, nombre):
 def seleccionar_cliente(clientes):
     if len(clientes) == 0:
         return None
-    if len(clientes) == 1:
-        return clientes[0]
 
     print("\nClientes registrados:")
     for cliente in clientes:
@@ -328,8 +332,10 @@ def main():
             if cliente is None:
                 print("No hay clientes registrados.")
             else:
+                saldo_anterior = cliente["saldo_puntos"]
                 puntos = procesar_lote_compras(cliente, compras_mensuales, historial, configuracion_puntos, planes)
-                print(f"Se procesaron las compras del mes para {cliente['nombre']}. Puntos generados: {puntos}")
+                print(f"Se procesaron las compras del mes para {cliente['nombre']}. Puntos generados en el lote: {puntos}")
+                print(f"Saldo anterior: {saldo_anterior} puntos")
                 print(f"Saldo actual: {cliente['saldo_puntos']} puntos")
 
         elif opcion == "2":
@@ -402,7 +408,7 @@ def main():
 
         elif opcion == "8":
             print("\n--- TOP PREMIUM ---")
-            top = obtener_top_premium(ranking)
+            top = obtener_top_premium(clientes)
 
             for puesto, cliente_top in enumerate(top, start=1):
                 print(f"{puesto}. {cliente_top['nombre']} - Total gastado: ${cliente_top['total_gastado']}")
