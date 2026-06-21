@@ -36,24 +36,29 @@ Como visitante del sitio Quiero ver los planes de suscripción disponibles, con 
 Para elegir el más conveniente según mi necesidad.
 
 
-HU07 – Testimonios y confianza
-
-Como potencial cliente Quiero leer testimonios reales de personas reales que hayan comprado en el último tiempo 
-Para confiar en el servicio y descubrir si realmente será satisfecha para mi necesidad actual.
-
-
-HU08 – Preguntas frecuentes
+HU07 – Preguntas frecuentes
 
 Como visitante Quiero acceder a una sección FAQ 
 Para resolver dudas rápidamente y poder comprender fácilmente como es la empresa, planes disponibles, productos y envios.
 
-HU09 – Top Premium
+HU08 – Top Premium
 
 Como dueño Quiero que los 10 mejor posicionados en el ranking de compradores siendo cat. Premium accedan a un sorteo con todo pago una vez al año (Viaje, estadía, guía dentro del cafetal, y muestra exclusiva de café) (Acompañado de una persona a elección). 
 Para premiar a los mejores rankeados del año brindando la posibilidad de conocer de primera mano a la empresa que los acompaña cada mañana con su excelente café.
 
-HU10 - Tiempo de espera
 
-Como cliente quiero saber el tiempo que demoran los envios segun la distancia en la que estoy.
-Para estimar el tiempo que tardara el producto para llegar a mi  localidad.
+HU9 - Agregar cliente
+
+Como dueño quiero poder agregar a un nuevo cliente
+Para poder brindarle los beneficios de la empresa a nuestros clientes.
+
+HU10 - Quitar cliente
+
+Como dueño quiero poder quitar a un excliente
+Para que no siga teniendo acceso a los beneficios o para renovar el stock de socios activos
+
+HU11 - Recategorizar cliente
+
+Como dueño o cliente quiero poder recategorizar mi categoria
+Para poder adquirir una suscripción que se adapte a las necesidades del cliente
 
